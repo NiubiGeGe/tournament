@@ -16,7 +16,7 @@ def deleteMatches():
     """Remove all the match records from the database."""
     DB = connect()
     c = DB.cursor()
-    #delete all matches.
+    # Delete all matches.
     players = c.execute("DELETE FROM matches;")
     DB.commit()
     DB.close()
@@ -26,7 +26,7 @@ def deletePlayers():
     """Remove all the player records from the database."""
     DB = connect()
     c = DB.cursor()
-    #delete all players.
+    # Delete all players.
     players = c.execute("DELETE FROM players;")
     DB.commit()
     DB.close()
@@ -36,7 +36,7 @@ def countPlayers():
     """Returns the number of players currently registered."""
     DB = connect()
     c = DB.cursor()
-    #count all players currently registered.
+    # Count all players currently registered.
     c.execute("SELECT count(*) as num FROM players;")
     player_count = c.fetchone()[0]
     DB.commit()
@@ -55,7 +55,7 @@ def registerPlayer(name):
 
     DB = connect()
     c = DB.cursor()
-    #register a player with name.
+    # Register a player with name.
     c.execute("INSERT INTO players (name) VALUES (%s)", (name,))
     DB.commit()
     DB.close()
@@ -80,7 +80,8 @@ def playerStandings():
     # matches.
     c.execute("""
         SELECT player_id, name,
-        count(players.player_id = matches.winner)::integer as wins, players.matches
+        count(players.player_id = matches.winner)::integer as wins,
+        players.matches, count(players.draw):: integer as draws
         FROM players left join matches on players.player_id = matches.winner
         GROUP BY players.player_id
         ORDER BY wins DESC;
@@ -91,15 +92,34 @@ def playerStandings():
     return player_standing
 
 
-def reportMatch(winner, loser):
+def reportMatch(winner, loser, draw):
     """Records the outcome of a single match between two players.
 
     Args:
       winner:  the id number of the player who won
       loser:  the id number of the player who lost
     """
+
     DB = connect()
     c = DB.cursor()
+    if draw is True:
+        # Insert match result into Match table.
+        c.execute("""
+        INSERT INTO matches (player_1, player_2)
+        VALUES (%s, %s)""", (winner, loser))
+        # Update winner matches count.
+        c.execute("""
+        UPDATE players
+        SET matches = matches + 1, draw = draw + 1
+        WHERE player_id = (%s)""", [winner])
+        # Update loser matches count.
+        c.execute("""
+        UPDATE players
+        SET matches = matches + 1, draw = draw + 1
+        WHERE player_id = (%s)""", [loser])
+        DB.commit()
+        DB.close()
+        return
     # Insert match result into Match table.
     c.execute("""
         INSERT INTO matches (player_1, player_2, winner, loser)
