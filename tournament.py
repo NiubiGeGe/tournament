@@ -80,10 +80,10 @@ def playerStandings():
     # matches.
     c.execute("""
         SELECT player_id, name,
-        count(players.player_id = matches.winner)::integer, players.matches
+        count(players.player_id = matches.winner)::integer as wins, players.matches
         FROM players left join matches on players.player_id = matches.winner
         GROUP BY players.player_id
-        ORDER BY count(players.player_id = matches.winner)::integer DESC;
+        ORDER BY wins DESC;
         """)
     player_standing = c.fetchall()
     DB.commit()
