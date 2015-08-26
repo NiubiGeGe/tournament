@@ -102,6 +102,7 @@ def reportMatch(winner, loser, draw):
 
     DB = connect()
     c = DB.cursor()
+    # Check to see if this is a draw game.
     if draw is True:
         # Insert match result into Match table.
         c.execute("""
@@ -152,11 +153,15 @@ def swissPairings():
         id2: the second player's unique id
         name2: the second player's name
     """
-
+    # get player stadings.
     pairings = playerStandings()
+    # Extract id from pairings.
     player_id = [x[0] for x in pairings]
+    # Extract name from pairings.
     player_name = [x[1] for x in pairings]
+    # Reformat the list.
     pairings = zip(player_id, player_name)
+    # Create an empty list.
     result = []
     for i in pairings:
         for j in i:
@@ -165,5 +170,3 @@ def swissPairings():
     it = iter(result)
     result = zip(it, it, it, it)
     return result
-    # Drop the view.
-

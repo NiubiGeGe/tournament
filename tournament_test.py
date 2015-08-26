@@ -69,6 +69,7 @@ def testStandingsBeforeMatches():
                          "they have played any matches.")
     elif len(standings) > 2:
         raise ValueError("Only registered players should appear in standings.")
+    # Added Draw into standings.
     [(id1, name1, wins1, matches1, draw1), (id2, name2, wins2, matches2, draw2)] = standings
     if matches1 != 0 or matches2 != 0 or wins1 != 0 or wins2 != 0:
         raise ValueError(
@@ -94,6 +95,7 @@ def testReportMatches():
     for (i, n, w, m, d) in standings:
         if m != 1:
             raise ValueError("Each player should have one match recorded.")
+        # If player contains draw, ignore the following if statements.
         if i in (id1, id2, id3, id4) and d != 0:
             break
         if i in (id1, id3) and w != 1:
@@ -112,8 +114,10 @@ def testPairings():
     registerPlayer("Pinkie Pie")
     standings = playerStandings()
     [id1, id2, id3, id4] = [row[0] for row in standings]
+    # Added a boolean represent draw game.
+    # Testing draw game.
     reportMatch(id1, id2, True)
-    print playerStandings()
+    # Testing normal game.
     reportMatch(id3, id4, False)
     pairings = swissPairings()
     if len(pairings) != 2:
@@ -138,5 +142,3 @@ if __name__ == '__main__':
     testReportMatches()
     testPairings()
     print "Success!  All tests pass!"
-
-
