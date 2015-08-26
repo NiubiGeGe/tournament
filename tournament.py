@@ -15,6 +15,7 @@ def deleteMatches():
     """Remove all the match records from the database."""
     DB = connect()
     c = DB.cursor()
+    #delete all matches.
     players = c.execute("DELETE FROM matches;")
     DB.commit()
     DB.close()
@@ -24,6 +25,7 @@ def deletePlayers():
     """Remove all the player records from the database."""
     DB = connect()
     c = DB.cursor()
+    #delete all players.
     players = c.execute("DELETE FROM players;")
     DB.commit()
     DB.close()
@@ -33,9 +35,9 @@ def countPlayers():
     """Returns the number of players currently registered."""
     DB = connect()
     c = DB.cursor()
+    #count all players currently registered.
     c.execute("SELECT count(*) as num FROM players;")
     player_count = c.fetchone()[0]
-
     DB.commit()
     return player_count
 
@@ -52,6 +54,7 @@ def registerPlayer(name):
 
     DB = connect()
     c = DB.cursor()
+    #register a player with name.
     c.execute("INSERT INTO players (name) VALUES (%s)", (name,))
     DB.commit()
     DB.close()
@@ -72,11 +75,14 @@ def playerStandings():
     """
     DB = connect()
     c = DB.cursor()
+    # Return a list of tuples includes player_id, name, wins and number of
+    # matches.
     c.execute("""
         SELECT player_id, name,
         count(players.player_id = matches.winner)::integer, players.matches
         FROM players left join matches on players.player_id = matches.winner
-        GROUP BY players.player_id;
+        GROUP BY players.player_id
+        ORDER BY count(players.player_id = matches.winner)::integer DESC;
         """)
     player_standing = c.fetchall()
     DB.commit()
@@ -93,13 +99,16 @@ def reportMatch(winner, loser):
     """
     DB = connect()
     c = DB.cursor()
+    # Insert match result into Match table.
     c.execute("""
         INSERT INTO matches (player_1, player_2, winner, loser)
         VALUES (%s, %s, %s, %s)""", (winner, loser, winner, loser))
+    # Update winner matches count.
     c.execute("""
         UPDATE players
         SET matches = matches + 1
         WHERE player_id = (%s)""", [winner])
+    # Update loser matches count.
     c.execute("""
         UPDATE players SET matches = matches + 1
         WHERE player_id = (%s)""", [loser])
@@ -125,23 +134,32 @@ def swissPairings():
 
     DB = connect()
     c = DB.cursor()
+    # Crate a view that ranks all players order by wins.
     c.execute("""
         CREATE VIEW pairings as
         SELECT player_id, name,
         count(players.player_id = matches.winner)::integer as wins
         FROM players left join matches on players.player_id = matches.winner
-        GROUP BY players.player_id order by wins DESC;""")
+        GROUP BY players.player_id
+        ORDER BY wins DESC;""")
+    # Return player_id and name order by players ranking.
     c.execute("""
         SELECT player_id, name
         FROM pairings;""")
+    # retrieves an array of all fetch data. 
     pairings = c.fetchall()
+    print pairings
+    #create an empty list.
     pairings2 = []
+
     for i in pairings:
         for j in i:
             pairings2.append(j)
+    # Return a list of tuples contains (id1, name1, id2, name2)
     it = iter(pairings2)
     pairings2 = zip(it, it, it, it)
     return pairings2
+    # Drop the view.
     c.execute("DROP VIEW pairings;")
     DB.commit()
     DB.close()
