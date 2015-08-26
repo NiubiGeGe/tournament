@@ -4,6 +4,7 @@
 #
 
 import psycopg2
+from collections import defaultdict
 
 
 def connect():
@@ -132,34 +133,17 @@ def swissPairings():
         name2: the second player's name
     """
 
-    DB = connect()
-    c = DB.cursor()
-    # Crate a view that ranks all players order by wins.
-    c.execute("""
-        CREATE VIEW pairings as
-        SELECT player_id, name,
-        count(players.player_id = matches.winner)::integer as wins
-        FROM players left join matches on players.player_id = matches.winner
-        GROUP BY players.player_id
-        ORDER BY wins DESC;""")
-    # Return player_id and name order by players ranking.
-    c.execute("""
-        SELECT player_id, name
-        FROM pairings;""")
-    # retrieves an array of all fetch data. 
-    pairings = c.fetchall()
-    print pairings
-    #create an empty list.
-    pairings2 = []
-
+    pairings = playerStandings()
+    player_id = [x[0] for x in pairings]
+    player_name = [x[1] for x in pairings]
+    pairings = zip(player_id, player_name)
+    result = []
     for i in pairings:
         for j in i:
-            pairings2.append(j)
+            result.append(j)
     # Return a list of tuples contains (id1, name1, id2, name2)
-    it = iter(pairings2)
-    pairings2 = zip(it, it, it, it)
-    return pairings2
+    it = iter(result)
+    result = zip(it, it, it, it)
+    return result
     # Drop the view.
-    c.execute("DROP VIEW pairings;")
-    DB.commit()
-    DB.close()
+
