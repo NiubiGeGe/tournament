@@ -3,8 +3,9 @@ tournament
 
 ## Quick Start:
 
-  1. Clone the repo: ```git clone https://github.com/jowangz/tournament.git```
-  2. To test to code: ```python tournament_test.py```
+  1. This file requires the installation of [psycopg2] (http://initd.org/psycopg/)
+  2. Clone the repo: ```git clone https://github.com/jowangz/tournament.git```
+  3. To test to code: ```python tournament_test.py```
 
 ## What's included:
 
