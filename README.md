@@ -14,7 +14,6 @@ tournament
 │   ├── tournament.py
 │   ├── tournament.sql
 │   ├── tournament_test.py
-│   ├── s
 │   ├── README.md
 ```
 
