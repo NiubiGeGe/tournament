@@ -1,15 +1,24 @@
 -- Table definitions for the tournament project.
---
--- Put your SQL 'create table' statements in this file; also 'create view'
--- statements if you choose to use it.
---
--- You can write comments in this file by starting them with two dashes, like
--- these lines here.
+
+-- Drop database tournament if exists to prevent any duplicate database
+DROP DATABASE IF EXISTS tournament;
+-- create database
+CREATE DATABASE tournament;
+-- connect to database
+\c tournament
 
 -- create player table
--- create table players(player_id serial primary key, name text, matches integer DEFAULT 0, draw integer DEFAULT 0);
+CREATE TABLE players(
+	player_id SERIAL PRIMARY KEY,
+	name TEXT NOT NULL,
+	matches INTEGER DEFAULT 0,
+	draw INTEGER DEFAULT 0
+);
 
 -- create match player
--- create table matches(match_id serial primary key, player_1 integer references players(player_id), player_2 integer references players(player_id), winner integer references players(player_id), loser integer references players(player_id));
-
-
+CREATE TABLE matches(
+	match_id serial primary key,
+	winner integer references players(player_id) ON DELETE CASCADE,
+	loser integer references players(player_id) ON DELETE CASCADE,
+	CHECK (winner <> loser)
+);

@@ -6,39 +6,41 @@
 import psycopg2
 
 
-def connect():
+def connect(database_name="tournament"):
     """Connect to the PostgreSQL database.  Returns a database connection."""
-    return psycopg2.connect("dbname=tournament")
+    try:
+        db = psycopg2.connect("dbname={}".format(database_name))
+        cursor = db.cursor()
+        return db, cursor
+    except:
+        print("connection error!")
 
 
 def deleteMatches():
     """Remove all the match records from the database."""
-    DB = connect()
-    c = DB.cursor()
+    db, cursor = connect()
     # Delete all matches.
-    players = c.execute("DELETE FROM matches;")
-    DB.commit()
-    DB.close()
+    players = cursor.execute("DELETE FROM matches;")
+    db.commit()
+    db.close()
 
 
 def deletePlayers():
     """Remove all the player records from the database."""
-    DB = connect()
-    c = DB.cursor()
+    db, cursor = connect()
     # Delete all players.
-    players = c.execute("DELETE FROM players;")
-    DB.commit()
-    DB.close()
+    players = cursor.execute("DELETE FROM players;")
+    db.commit()
+    db.close()
 
 
 def countPlayers():
     """Returns the number of players currently registered."""
-    DB = connect()
-    c = DB.cursor()
+    db, cursor = connect()
     # Count all players currently registered.
-    c.execute("SELECT count(*) as num FROM players;")
-    player_count = c.fetchone()[0]
-    DB.commit()
+    cursor.execute("SELECT count(*) as num FROM players;")
+    player_count = cursor.fetchone()[0]
+    db.commit()
     return player_count
 
 
@@ -52,12 +54,11 @@ def registerPlayer(name):
       name: the player's full name (need not be unique).
     """
 
-    DB = connect()
-    c = DB.cursor()
+    db, cursor = connect()
     # Register a player with name.
-    c.execute("INSERT INTO players (name) VALUES (%s)", (name,))
-    DB.commit()
-    DB.close()
+    cursor.execute("INSERT INTO players (name) VALUES (%s)", (name,))
+    db.commit()
+    db.close()
 
 
 def playerStandings():
@@ -73,11 +74,10 @@ def playerStandings():
         wins: the number of matches the player has won
         matches: the number of matches the player has played
     """
-    DB = connect()
-    c = DB.cursor()
+    db, cursor = connect()
     # Return a list of tuples includes player_id, name, wins and number of
     # matches.
-    c.execute("""
+    cursor.execute("""
         SELECT player_id, name,
         count(players.player_id = matches.winner)::integer as wins,
         players.matches, count(players.draw):: integer as draws
@@ -85,9 +85,9 @@ def playerStandings():
         GROUP BY players.player_id
         ORDER BY wins DESC;
         """)
-    player_standing = c.fetchall()
-    DB.commit()
-    DB.close()
+    player_standing = cursor.fetchall()
+    db.commit()
+    db.close()
     return player_standing
 
 
@@ -99,42 +99,41 @@ def reportMatch(winner, loser, draw):
       loser:  the id number of the player who lost
     """
 
-    DB = connect()
-    c = DB.cursor()
+    db, cursor = connect()
     # Check to see if this is a draw game.
     if draw is True:
         # Insert match result into Match table.
-        c.execute("""
-        INSERT INTO matches (player_1, player_2)
-        VALUES (%s, %s)""", (winner, loser))
+        cursor.execute("""
+        INSERT INTO matches (winner, loser)
+        VALUES (%s, %s)""", (None, None))
         # Update winner matches count.
-        c.execute("""
+        cursor.execute("""
         UPDATE players
         SET matches = matches + 1, draw = draw + 1
         WHERE player_id = (%s)""", [winner])
         # Update loser matches count.
-        c.execute("""
+        cursor.execute("""
         UPDATE players
         SET matches = matches + 1, draw = draw + 1
         WHERE player_id = (%s)""", [loser])
-        DB.commit()
-        DB.close()
+        db.commit()
+        db.close()
         return
     # Insert match result into Match table.
-    c.execute("""
-        INSERT INTO matches (player_1, player_2, winner, loser)
-        VALUES (%s, %s, %s, %s)""", (winner, loser, winner, loser))
+    cursor.execute("""
+        INSERT INTO matches (winner, loser)
+        VALUES (%s, %s)""", (winner, loser))
     # Update winner matches count.
-    c.execute("""
+    cursor.execute("""
         UPDATE players
         SET matches = matches + 1
         WHERE player_id = (%s)""", [winner])
     # Update loser matches count.
-    c.execute("""
+    cursor.execute("""
         UPDATE players SET matches = matches + 1
         WHERE player_id = (%s)""", [loser])
-    DB.commit()
-    DB.close()
+    db.commit()
+    db.close()
 
 
 def swissPairings():
@@ -152,20 +151,24 @@ def swissPairings():
         id2: the second player's unique id
         name2: the second player's name
     """
-    # get player stadings.
-    pairings = playerStandings()
-    # Extract id from pairings.
-    player_id = [x[0] for x in pairings]
-    # Extract name from pairings.
-    player_name = [x[1] for x in pairings]
-    # Reformat the list.
-    pairings = zip(player_id, player_name)
-    # Create an empty list.
-    result = []
-    for i in pairings:
-        for j in i:
-            result.append(j)
-    # Return a list of tuples contains (id1, name1, id2, name2)
-    it = iter(result)
-    result = zip(it, it, it, it)
-    return result
+    # check players count is an even number
+    if len(playerStandings()) % 2 == 0:
+        # get player stadings.
+        pairings = playerStandings()
+        # Extract id from pairings.
+        player_id = [x[0] for x in pairings]
+        # Extract name from pairings.
+        player_name = [x[1] for x in pairings]
+        # Reformat the list.
+        pairings = zip(player_id, player_name)
+        # Create an empty list.
+        result = []
+        for i in pairings:
+            for j in i:
+                result.append(j)
+        # Return a list of tuples contains (id1, name1, id2, name2)
+        it = iter(result)
+        result = zip(it, it, it, it)
+        return result
+    else:
+        print("We must have a even number of players")
