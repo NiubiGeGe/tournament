@@ -15,14 +15,18 @@ def connect(database_name="tournament"):
     except:
         print("connection error!")
 
+def disconnect(db):
+    """Commit and close database"""
+    commit = db.commit()
+    close = db.close()
+
 
 def deleteMatches():
     """Remove all the match records from the database."""
     db, cursor = connect()
     # Delete all matches.
     players = cursor.execute("DELETE FROM matches;")
-    db.commit()
-    db.close()
+    disconnect(db)
 
 
 def deletePlayers():
@@ -30,8 +34,7 @@ def deletePlayers():
     db, cursor = connect()
     # Delete all players.
     players = cursor.execute("DELETE FROM players;")
-    db.commit()
-    db.close()
+    disconnect(db)
 
 
 def countPlayers():
@@ -40,7 +43,7 @@ def countPlayers():
     # Count all players currently registered.
     cursor.execute("SELECT count(*) as num FROM players;")
     player_count = cursor.fetchone()[0]
-    db.commit()
+    disconnect(db)
     return player_count
 
 
@@ -57,8 +60,7 @@ def registerPlayer(name):
     db, cursor = connect()
     # Register a player with name.
     cursor.execute("INSERT INTO players (name) VALUES (%s)", (name,))
-    db.commit()
-    db.close()
+    disconnect(db)
 
 
 def playerStandings():
@@ -86,8 +88,7 @@ def playerStandings():
         ORDER BY wins DESC;
         """)
     player_standing = cursor.fetchall()
-    db.commit()
-    db.close()
+    disconnect(db)
     return player_standing
 
 
@@ -116,8 +117,7 @@ def reportMatch(winner, loser, draw):
         UPDATE players
         SET matches = matches + 1, draw = draw + 1
         WHERE player_id = (%s)""", [loser])
-        db.commit()
-        db.close()
+        disconnect(db)
         return
     # Insert match result into Match table.
     cursor.execute("""
@@ -132,8 +132,7 @@ def reportMatch(winner, loser, draw):
     cursor.execute("""
         UPDATE players SET matches = matches + 1
         WHERE player_id = (%s)""", [loser])
-    db.commit()
-    db.close()
+    disconnect(db)
 
 
 def swissPairings():
