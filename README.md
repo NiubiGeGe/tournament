@@ -6,8 +6,12 @@ tournament
   1. This file requires the installation of [psycopg2] (http://initd.org/psycopg/) in order to enter psql command line interface.
   2. Clone the repo: ```git clone https://github.com/jowangz/tournament.git```
   3. Setting up database:
-    * -- Drop database tournament if exists to prevent any duplicate database
-      '''DROP DATABASE IF EXISTS tournament;'''
+    * Drop database tournament if exists to prevent any duplicate database
+      ```DROP DATABASE IF EXISTS tournament;```
+    * Create database
+      ```CREATE DATABASE tournament;```
+    * Create database
+      ```CREATE DATABASE tournament;```
   3. To test to code: ```python tournament_test.py```
 
 ## What's included:
