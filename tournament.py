@@ -15,6 +15,7 @@ def connect(database_name="tournament"):
     except:
         print("connection error!")
 
+
 def disconnect(db):
     """Commit and close database"""
     commit = db.commit()
