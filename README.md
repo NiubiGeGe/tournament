@@ -8,7 +8,7 @@ tournament
   3. Import the database schema by using command ```psql -f tournament.sql```
   4. To test to code: ```python tournament_test.py```
 
-  Basic psql commands:
+## Basic psql commands:
   * Use command ```psql tournament``` to enter command line interface.
   * Use hot key ```control + D``` to exit command line interface.
 
