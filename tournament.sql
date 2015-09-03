@@ -17,8 +17,8 @@ CREATE TABLE players(
 
 -- create match player
 CREATE TABLE matches(
-    match_id serial primary key,
-    winner integer references players(player_id) ON DELETE CASCADE,
-    loser integer references players(player_id) ON DELETE CASCADE,
-    CHECK (winner <> loser)
+    match_id SERIAL primary key,
+    player_1 INTEGER references players(player_id) ON DELETE CASCADE,
+    player_2 INTEGER references players(player_id) ON DELETE CASCADE,
+    winner INTEGER
 );
