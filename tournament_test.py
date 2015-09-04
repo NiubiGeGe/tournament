@@ -89,8 +89,8 @@ def testReportMatches():
     registerPlayer("Diane Grant")
     standings = playerStandings()
     [id1, id2, id3, id4] = [row[0] for row in standings]
-    reportMatch(id1, id2, False)
-    reportMatch(id3, id4, False)
+    reportMatch(id1, id2)
+    reportMatch(id3, id4)
     standings = playerStandings()
     for (i, n, w, m, d) in standings:
         if m != 1:

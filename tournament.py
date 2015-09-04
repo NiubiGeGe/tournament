@@ -82,9 +82,9 @@ def playerStandings():
     # matches.
     cursor.execute("""
         SELECT player_id, name,
-        count(players.player_id = matches.winner)::integer as wins,
-        players.matches, count(players.draw):: integer as draws
-        FROM players left join matches on players.player_id = matches.winner
+        count(players.player_id = matches.player_1)::integer as wins,
+        players.matches, draw
+        FROM players, matches
         GROUP BY players.player_id
         ORDER BY wins DESC;
         """)
@@ -93,7 +93,7 @@ def playerStandings():
     return player_standing
 
 
-def reportMatch(winner, loser, draw):
+def reportMatch(winner, loser, *draw):
     """Records the outcome of a single match between two players.
 
     Args:
@@ -106,8 +106,8 @@ def reportMatch(winner, loser, draw):
     if draw is True:
         # Insert match result into Match table.
         cursor.execute("""
-        INSERT INTO matches (winner, loser)
-        VALUES (%s, %s)""", (None, None))
+        INSERT INTO matches (player_1, player_2, winner)
+        VALUES (%s, %s, %s)""", (winner, loser, -1))
         # Update winner matches count.
         cursor.execute("""
         UPDATE players
@@ -122,8 +122,8 @@ def reportMatch(winner, loser, draw):
         return
     # Insert match result into Match table.
     cursor.execute("""
-        INSERT INTO matches (winner, loser)
-        VALUES (%s, %s)""", (winner, loser))
+        INSERT INTO matches (player_1, player_2, winner)
+        VALUES (%s, %s, %s)""", (winner, loser, winner))
     # Update winner matches count.
     cursor.execute("""
         UPDATE players
