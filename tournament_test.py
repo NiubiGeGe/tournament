@@ -70,8 +70,8 @@ def testStandingsBeforeMatches():
     elif len(standings) > 2:
         raise ValueError("Only registered players should appear in standings.")
     # Added Draw into standings.
-    [(id1, name1, wins1, matches1, draw1), (id2, name2, wins2, matches2, draw2)] = standings
-    if matches1 != 0 or matches2 != 0 or wins1 != 0 or wins2 != 0:
+    [(id1, name1, wins1, matches1, draw1), (id2, name2, wins2, matches2, draw2)] = standings  # noqa
+    if matches1 != 0 or matches2 != 0 or wins1 != 0 or wins2 != 0or draw1 != 0 or draw2 != 0:  # noqa
         raise ValueError(
             "Newly registered players should have no matches or wins.")
     if set([name1, name2]) != set(["Melpomene Murray", "Randy Schwartz"]):
@@ -125,6 +125,7 @@ def testPairings():
             "After one match, players with one win should be paired.")
     print "8. After one match, players with one win are paired."
 
+
 def testDrawGame():
     deleteMatches()
     deletePlayers()
@@ -145,6 +146,7 @@ def testDrawGame():
         elif i in (id1, id2, id3, id4) and w != 0:
             raise ValueError("Each match loser should have zero wins recorded.")
     print "9. After a draw match, players have updated draw records."
+
 
 if __name__ == '__main__':
     testDeleteMatches()

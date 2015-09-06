@@ -101,32 +101,34 @@ def reportMatch(winner, loser, *draw):
     if draw:
         # Insert match result into Match table.
         cursor.execute("""
-        INSERT INTO matches (player_1, player_2, winner)
+        INSERT INTO matches (player_1_id, player_2_id, winner)
         VALUES (%s, %s, %s)""", (winner, loser, -1))
         # Update winner matches count.
         cursor.execute("""
         UPDATE players
-        SET matches = matches + 1, draw = draw + 1
+        SET matches_played = matches_played + 1,
+        draw_encountered = draw_encountered + 1
         WHERE player_id = (%s)""", [winner])
         # Update loser matches count.
         cursor.execute("""
         UPDATE players
-        SET matches = matches + 1, draw = draw + 1
+        SET matches_played = matches_played + 1,
+        draw_encountered = draw_encountered + 1
         WHERE player_id = (%s)""", [loser])
         disconnect(db)
         return
     # Insert match result into Match table.
     cursor.execute("""
-        INSERT INTO matches (player_1, player_2, winner)
+        INSERT INTO matches (player_1_id, player_2_id, winner)
         VALUES (%s, %s, %s)""", (winner, loser, winner))
     # Update winner matches count.
     cursor.execute("""
         UPDATE players
-        SET matches = matches + 1
+        SET matches_played = matches_played + 1
         WHERE player_id = (%s)""", [winner])
     # Update loser matches count.
     cursor.execute("""
-        UPDATE players SET matches = matches + 1
+        UPDATE players SET matches_played = matches_played + 1
         WHERE player_id = (%s)""", [loser])
     disconnect(db)
 
