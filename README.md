@@ -19,6 +19,7 @@ tournament
   7. After a match, players have updated standings.
   8. After one match, players with one win are paired.
   9. After a draw match, players have updated draw records.
+  
   Success!  All tests pass!
 
 ## Basic psql commands:
