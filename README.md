@@ -7,17 +7,19 @@ tournament
   2. Clone the repo: ```git clone https://github.com/jowangz/tournament.git```
   3. Import the database schema by using command ```psql -f tournament.sql```
   4. To test to code: ```python tournament_test.py```
-  5. Expected test case results are:
-	```1. Old matches can be deleted.
-	2. Player records can be deleted.
-	4. After registering a player, countPlayers() returns 1.
-	3. After deleting, countPlayers() returns zero.
-	5. Players can be registered and deleted.
-	6. Newly registered players appear in the standings with no matches.
-	7. After a match, players have updated standings.
-	8. After one match, players with one win are paired.
-	9. After a draw match, players have updated draw records.```
-  6. ```Success!  All tests pass!``` will be shown if the code ran successfully.
+  5. ```Success!  All tests pass!``` will be shown if the code ran successfully.
+
+## Expected test case results:
+  1. Old matches can be deleted.
+  2. Player records can be deleted.
+  3. After deleting, countPlayers() returns zero.
+  4. After registering a player, countPlayers() returns 1.
+  5. Players can be registered and deleted.
+  6. Newly registered players appear in the standings with no matches.
+  7. After a match, players have updated standings.
+  8. After one match, players with one win are paired.
+  9. After a draw match, players have updated draw records.
+  Success!  All tests pass!
 
 ## Basic psql commands:
   * Use command ```psql tournament``` to enter command line interface.

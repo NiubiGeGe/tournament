@@ -71,7 +71,7 @@ def testStandingsBeforeMatches():
         raise ValueError("Only registered players should appear in standings.")
     # Added Draw into standings.
     [(id1, name1, wins1, matches1, draw1), (id2, name2, wins2, matches2, draw2)] = standings  # noqa
-    if matches1 != 0 or matches2 != 0 or wins1 != 0 or wins2 != 0or draw1 != 0 or draw2 != 0:  # noqa
+    if matches1 != 0 or matches2 != 0 or wins1 != 0 or wins2 != 0 or draw1 != 0 or draw2 != 0:  # noqa
         raise ValueError(
             "Newly registered players should have no matches or wins.")
     if set([name1, name2]) != set(["Melpomene Murray", "Randy Schwartz"]):
@@ -151,8 +151,8 @@ def testDrawGame():
 if __name__ == '__main__':
     testDeleteMatches()
     testDelete()
-    testRegister()
     testCount()
+    testRegister()
     testRegisterCountDelete()
     testStandingsBeforeMatches()
     testReportMatches()
