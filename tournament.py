@@ -81,19 +81,14 @@ def playerStandings():
     # Return a list of tuples includes player_id, name, wins and number of
     # matches.
     cursor.execute("""
-        SELECT player_id, name,
-        count(players.player_id = matches.winner)::integer as wins,
-        players.matches, count(players.draw):: integer as draws
-        FROM players left join matches on players.player_id = matches.winner
-        GROUP BY players.player_id
-        ORDER BY wins DESC;
+        SELECT * FROM player_standings_view;
         """)
     player_standing = cursor.fetchall()
     disconnect(db)
     return player_standing
 
 
-def reportMatch(winner, loser, draw):
+def reportMatch(winner, loser, *draw):
     """Records the outcome of a single match between two players.
 
     Args:
@@ -103,11 +98,11 @@ def reportMatch(winner, loser, draw):
 
     db, cursor = connect()
     # Check to see if this is a draw game.
-    if draw is True:
+    if draw:
         # Insert match result into Match table.
         cursor.execute("""
-        INSERT INTO matches (winner, loser)
-        VALUES (%s, %s)""", (None, None))
+        INSERT INTO matches (player_1, player_2, winner)
+        VALUES (%s, %s, %s)""", (winner, loser, -1))
         # Update winner matches count.
         cursor.execute("""
         UPDATE players
@@ -122,8 +117,8 @@ def reportMatch(winner, loser, draw):
         return
     # Insert match result into Match table.
     cursor.execute("""
-        INSERT INTO matches (winner, loser)
-        VALUES (%s, %s)""", (winner, loser))
+        INSERT INTO matches (player_1, player_2, winner)
+        VALUES (%s, %s, %s)""", (winner, loser, winner))
     # Update winner matches count.
     cursor.execute("""
         UPDATE players
@@ -151,10 +146,10 @@ def swissPairings():
         id2: the second player's unique id
         name2: the second player's name
     """
+    # get player stadings.
+    pairings = playerStandings()
     # check players count is an even number
-    if len(playerStandings()) % 2 == 0:
-        # get player stadings.
-        pairings = playerStandings()
+    if len(pairings) % 2 == 0:
         # Extract id from pairings.
         player_id = [x[0] for x in pairings]
         # Extract name from pairings.

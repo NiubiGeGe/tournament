@@ -7,6 +7,7 @@ tournament
   2. Clone the repo: ```git clone https://github.com/jowangz/tournament.git```
   3. Import the database schema by using command ```psql -f tournament.sql```
   4. To test to code: ```python tournament_test.py```
+  5. ```Success!  All tests pass!``` will be shown if the code ran successfully.
 
 ## Basic psql commands:
   * Use command ```psql tournament``` to enter command line interface.
@@ -23,8 +24,9 @@ tournament
 ```
 
 ## Features:
-
-  This is a simple swiss pairing python application. It makes matches based on
+  
+  * The code includes 9 differenct test case.
+  * This is a simple swiss pairing python application. It makes matches based on
     the ranking of individual player. This version supports draw game.
 
 
