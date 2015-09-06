@@ -81,12 +81,7 @@ def playerStandings():
     # Return a list of tuples includes player_id, name, wins and number of
     # matches.
     cursor.execute("""
-        SELECT player_id, name,
-        count(players.player_id = matches.player_1)::integer as wins,
-        players.matches, draw
-        FROM players, matches
-        GROUP BY players.player_id
-        ORDER BY wins DESC;
+        SELECT * FROM player_standings_view;
         """)
     player_standing = cursor.fetchall()
     disconnect(db)
@@ -103,7 +98,7 @@ def reportMatch(winner, loser, *draw):
 
     db, cursor = connect()
     # Check to see if this is a draw game.
-    if draw is True:
+    if draw:
         # Insert match result into Match table.
         cursor.execute("""
         INSERT INTO matches (player_1, player_2, winner)
@@ -151,10 +146,10 @@ def swissPairings():
         id2: the second player's unique id
         name2: the second player's name
     """
+    # get player stadings.
+    pairings = playerStandings()
     # check players count is an even number
-    if len(playerStandings()) % 2 == 0:
-        # get player stadings.
-        pairings = playerStandings()
+    if len(pairings) % 2 == 0:
         # Extract id from pairings.
         player_id = [x[0] for x in pairings]
         # Extract name from pairings.

@@ -95,9 +95,6 @@ def testReportMatches():
     for (i, n, w, m, d) in standings:
         if m != 1:
             raise ValueError("Each player should have one match recorded.")
-        # If player contains draw, ignore the following if statements.
-        if i in (id1, id2, id3, id4) and d != 0:
-            break
         if i in (id1, id3) and w != 1:
             raise ValueError("Each match winner should have one win recorded.")
         elif i in (id2, id4) and w != 0:
@@ -114,11 +111,8 @@ def testPairings():
     registerPlayer("Pinkie Pie")
     standings = playerStandings()
     [id1, id2, id3, id4] = [row[0] for row in standings]
-    # Added a boolean represent draw game.
-    # Testing draw game.
-    reportMatch(id1, id2, True)
-    # Testing normal game.
-    reportMatch(id3, id4, False)
+    reportMatch(id1, id2)
+    reportMatch(id3, id4)
     pairings = swissPairings()
     if len(pairings) != 2:
         raise ValueError(
@@ -131,6 +125,26 @@ def testPairings():
             "After one match, players with one win should be paired.")
     print "8. After one match, players with one win are paired."
 
+def testDrawGame():
+    deleteMatches()
+    deletePlayers()
+    registerPlayer("Jon Snow")
+    registerPlayer("Reek Greyjoy")
+    registerPlayer("Frank")
+    registerPlayer("Lil B")
+    standings = playerStandings()
+    [id1, id2, id3, id4] = [row[0] for row in standings]
+    reportMatch(id1, id2, True)
+    reportMatch(id3, id4, True)
+    standings = playerStandings()
+    for (i, n, w, m, d) in standings:
+        if m != 1:
+            raise ValueError("Each player should have one match recorded.")
+        if i in (id1, id2, id3, id4) and d != 1:
+            raise ValueError("Each match winner should have one draw recorded.")
+        elif i in (id1, id2, id3, id4) and w != 0:
+            raise ValueError("Each match loser should have zero wins recorded.")
+    print "9. After a draw match, players have updated draw records."
 
 if __name__ == '__main__':
     testDeleteMatches()
@@ -141,4 +155,5 @@ if __name__ == '__main__':
     testStandingsBeforeMatches()
     testReportMatches()
     testPairings()
+    testDrawGame()
     print "Success!  All tests pass!"

@@ -22,3 +22,12 @@ CREATE TABLE matches(
     player_2 INTEGER references players(player_id) ON DELETE CASCADE,
     winner INTEGER
 );
+
+-- create view for wins
+CREATE VIEW player_standings_view AS
+    SELECT player_id, name,
+    count(players.player_id = matches.winner)::integer as wins,
+    players.matches, draw
+    FROM players LEFT JOIN matches on players.player_id = matches.winner
+    GROUP BY players.player_id
+    ORDER BY wins DESC;
