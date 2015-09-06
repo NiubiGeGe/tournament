@@ -24,8 +24,9 @@ tournament
 ```
 
 ## Features:
-
-  This is a simple swiss pairing python application. It makes matches based on
+  
+  * The code includes 9 differenct test case.
+  * This is a simple swiss pairing python application. It makes matches based on
     the ranking of individual player. This version supports draw game.
 
 
